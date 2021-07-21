@@ -1090,7 +1090,7 @@ kmodules.xyz/resource-metadata/pkg/graph
 # kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5
 ## explicit
 kubeform.dev/apimachinery/api/v1alpha1
-# kubeform.dev/provider-equinixmetal-api v0.0.0-20210721194601-04dcd5ded2b4
+# kubeform.dev/provider-equinixmetal-api v0.0.0-20210721194739-ae93d2aecb89
 ## explicit
 kubeform.dev/provider-equinixmetal-api/api/provider
 kubeform.dev/provider-equinixmetal-api/apis/bgp
