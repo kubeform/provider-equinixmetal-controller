@@ -3,16 +3,31 @@ module kubeform.dev/provider-equinixmetal-controller
 go 1.16
 
 require (
-	cloud.google.com/go v0.61.0 // indirect
-	github.com/json-iterator/go v1.1.11 // indirect
+	github.com/fatih/structs v1.1.0
+	github.com/go-logr/logr v0.4.0
+	github.com/gobuffalo/flect v0.2.3
+	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
+	github.com/hashicorp/terraform-plugin-go v0.3.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
+	github.com/imdario/mergo v0.3.12
+	github.com/json-iterator/go v1.1.11
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.1.3
+	go.bytebuilders.dev/audit v0.0.7
 	go.bytebuilders.dev/license-verifier v0.9.2
-	golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b // indirect
+	go.bytebuilders.dev/license-verifier/kubernetes v0.9.2
 	gomodules.xyz/logs v0.0.3
 	gomodules.xyz/x v0.0.5
+	k8s.io/api v0.21.1
+	k8s.io/apiextensions-apiserver v0.21.1
+	k8s.io/apimachinery v0.21.1
 	k8s.io/client-go v0.21.1
 	k8s.io/klog/v2 v2.8.0
 	kmodules.xyz/client-go v0.0.0-20210617233340-13d22e91512b
+	kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5
+	kubeform.dev/provider-equinixmetal-api v0.0.0-20210721174920-63804088b7d7
+	sigs.k8s.io/cli-utils v0.25.0
+	sigs.k8s.io/controller-runtime v0.9.0
 )
 
 replace github.com/json-iterator/go => github.com/gomodules/json-iterator v1.1.12-0.20210506053207-2a3ea71074bc
