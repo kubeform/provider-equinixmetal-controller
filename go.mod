@@ -3,6 +3,7 @@ module kubeform.dev/provider-equinixmetal-controller
 go 1.16
 
 require (
+	github.com/equinix/terraform-provider-metal v1.1.1-0.20210721135909-47bb95202dd9
 	github.com/fatih/structs v1.1.0
 	github.com/go-logr/logr v0.4.0
 	github.com/gobuffalo/flect v0.2.3
@@ -112,7 +113,7 @@ replace google.golang.org/api => google.golang.org/api v0.20.0
 
 replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20201110150050-8816d57aaa9a
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.27.1
+replace google.golang.org/grpc => google.golang.org/grpc v1.32.0
 
 replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.1.0-rc.1.0.20210503022716-7e2d4913a125
 

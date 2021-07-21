@@ -27,6 +27,7 @@ import (
 	"sync"
 	"time"
 
+	equinixmetal "github.com/equinix/terraform-provider-metal/metal"
 	"github.com/gobuffalo/flect"
 	auditlib "go.bytebuilders.dev/audit/lib"
 	arv1 "k8s.io/api/admissionregistration/v1"
