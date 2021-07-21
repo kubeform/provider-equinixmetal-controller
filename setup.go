@@ -39,8 +39,34 @@ import (
 	admissionregistrationv1 "k8s.io/client-go/kubernetes/typed/admissionregistration/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/klog/v2"
-	metalv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/metal/v1alpha1"
-	controllersmetal "kubeform.dev/provider-equinixmetal-controller/controllers/metal"
+	bgpv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/bgp/v1alpha1"
+	connectionv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/connection/v1alpha1"
+	devicev1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/device/v1alpha1"
+	ipv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/ip/v1alpha1"
+	organizationv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/organization/v1alpha1"
+	portv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/port/v1alpha1"
+	projectv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/project/v1alpha1"
+	reservedv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/reserved/v1alpha1"
+	spotv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/spot/v1alpha1"
+	sshv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/ssh/v1alpha1"
+	userv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/user/v1alpha1"
+	virtualv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/virtual/v1alpha1"
+	vlanv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/vlan/v1alpha1"
+	volumev1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/volume/v1alpha1"
+	controllersbgp "kubeform.dev/provider-equinixmetal-controller/controllers/bgp"
+	controllersconnection "kubeform.dev/provider-equinixmetal-controller/controllers/connection"
+	controllersdevice "kubeform.dev/provider-equinixmetal-controller/controllers/device"
+	controllersip "kubeform.dev/provider-equinixmetal-controller/controllers/ip"
+	controllersorganization "kubeform.dev/provider-equinixmetal-controller/controllers/organization"
+	controllersport "kubeform.dev/provider-equinixmetal-controller/controllers/port"
+	controllersproject "kubeform.dev/provider-equinixmetal-controller/controllers/project"
+	controllersreserved "kubeform.dev/provider-equinixmetal-controller/controllers/reserved"
+	controllersspot "kubeform.dev/provider-equinixmetal-controller/controllers/spot"
+	controllersssh "kubeform.dev/provider-equinixmetal-controller/controllers/ssh"
+	controllersuser "kubeform.dev/provider-equinixmetal-controller/controllers/user"
+	controllersvirtual "kubeform.dev/provider-equinixmetal-controller/controllers/virtual"
+	controllersvlan "kubeform.dev/provider-equinixmetal-controller/controllers/vlan"
+	controllersvolume "kubeform.dev/provider-equinixmetal-controller/controllers/volume"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
@@ -227,13 +253,13 @@ func updateVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Client,
 func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVersionKind, auditor *auditlib.EventPublisher, watchOnlyDefault bool) error {
 	switch gvk {
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "bgp.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "BgpSession",
+		Kind:    "Session",
 	}:
-		if err := (&controllersmetal.BgpSessionReconciler{
+		if err := (&controllersbgp.SessionReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("BgpSession"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Session"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -241,15 +267,15 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_bgp_session",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "BgpSession")
+			setupLog.Error(err, "unable to create controller", "controller", "Session")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "connection.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Connection",
 	}:
-		if err := (&controllersmetal.ConnectionReconciler{
+		if err := (&controllersconnection.ConnectionReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Connection"),
 			Scheme:           mgr.GetScheme(),
@@ -263,11 +289,11 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "device.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Device",
 	}:
-		if err := (&controllersmetal.DeviceReconciler{
+		if err := (&controllersdevice.DeviceReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Device"),
 			Scheme:           mgr.GetScheme(),
@@ -281,13 +307,13 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "device.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "DeviceNetworkType",
+		Kind:    "NetworkType",
 	}:
-		if err := (&controllersmetal.DeviceNetworkTypeReconciler{
+		if err := (&controllersdevice.NetworkTypeReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("DeviceNetworkType"),
+			Log:              ctrl.Log.WithName("controllers").WithName("NetworkType"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -295,17 +321,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_device_network_type",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "DeviceNetworkType")
+			setupLog.Error(err, "unable to create controller", "controller", "NetworkType")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "ip.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "IpAttachment",
+		Kind:    "Attachment",
 	}:
-		if err := (&controllersmetal.IpAttachmentReconciler{
+		if err := (&controllersip.AttachmentReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("IpAttachment"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Attachment"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -313,15 +339,15 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_ip_attachment",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "IpAttachment")
+			setupLog.Error(err, "unable to create controller", "controller", "Attachment")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "organization.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Organization",
 	}:
-		if err := (&controllersmetal.OrganizationReconciler{
+		if err := (&controllersorganization.OrganizationReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Organization"),
 			Scheme:           mgr.GetScheme(),
@@ -335,13 +361,13 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "port.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "PortVLANAttachment",
+		Kind:    "VlanAttachment",
 	}:
-		if err := (&controllersmetal.PortVLANAttachmentReconciler{
+		if err := (&controllersport.VlanAttachmentReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("PortVLANAttachment"),
+			Log:              ctrl.Log.WithName("controllers").WithName("VlanAttachment"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -349,15 +375,15 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_port_vlan_attachment",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "PortVLANAttachment")
+			setupLog.Error(err, "unable to create controller", "controller", "VlanAttachment")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "project.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Project",
 	}:
-		if err := (&controllersmetal.ProjectReconciler{
+		if err := (&controllersproject.ProjectReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Project"),
 			Scheme:           mgr.GetScheme(),
@@ -371,13 +397,13 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "project.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "ProjectAPIKey",
+		Kind:    "ApiKey",
 	}:
-		if err := (&controllersmetal.ProjectAPIKeyReconciler{
+		if err := (&controllersproject.ApiKeyReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("ProjectAPIKey"),
+			Log:              ctrl.Log.WithName("controllers").WithName("ApiKey"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -385,17 +411,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_project_api_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "ProjectAPIKey")
+			setupLog.Error(err, "unable to create controller", "controller", "ApiKey")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "project.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "ProjectSSHKey",
+		Kind:    "SshKey",
 	}:
-		if err := (&controllersmetal.ProjectSSHKeyReconciler{
+		if err := (&controllersproject.SshKeyReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("ProjectSSHKey"),
+			Log:              ctrl.Log.WithName("controllers").WithName("SshKey"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -403,17 +429,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_project_ssh_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "ProjectSSHKey")
+			setupLog.Error(err, "unable to create controller", "controller", "SshKey")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "reserved.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "ReservedIPBlock",
+		Kind:    "IpBlock",
 	}:
-		if err := (&controllersmetal.ReservedIPBlockReconciler{
+		if err := (&controllersreserved.IpBlockReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("ReservedIPBlock"),
+			Log:              ctrl.Log.WithName("controllers").WithName("IpBlock"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -421,17 +447,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_reserved_ip_block",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "ReservedIPBlock")
+			setupLog.Error(err, "unable to create controller", "controller", "IpBlock")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "spot.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "SpotMarketRequest",
+		Kind:    "MarketRequest",
 	}:
-		if err := (&controllersmetal.SpotMarketRequestReconciler{
+		if err := (&controllersspot.MarketRequestReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("SpotMarketRequest"),
+			Log:              ctrl.Log.WithName("controllers").WithName("MarketRequest"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -439,17 +465,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_spot_market_request",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "SpotMarketRequest")
+			setupLog.Error(err, "unable to create controller", "controller", "MarketRequest")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "ssh.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "SshKey",
+		Kind:    "Key",
 	}:
-		if err := (&controllersmetal.SshKeyReconciler{
+		if err := (&controllersssh.KeyReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("SshKey"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Key"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -457,17 +483,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_ssh_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "SshKey")
+			setupLog.Error(err, "unable to create controller", "controller", "Key")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "user.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "UserAPIKey",
+		Kind:    "ApiKey",
 	}:
-		if err := (&controllersmetal.UserAPIKeyReconciler{
+		if err := (&controllersuser.ApiKeyReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("UserAPIKey"),
+			Log:              ctrl.Log.WithName("controllers").WithName("ApiKey"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -475,17 +501,17 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_user_api_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "UserAPIKey")
+			setupLog.Error(err, "unable to create controller", "controller", "ApiKey")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "virtual.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "VirtualCircuit",
+		Kind:    "Circuit",
 	}:
-		if err := (&controllersmetal.VirtualCircuitReconciler{
+		if err := (&controllersvirtual.CircuitReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("VirtualCircuit"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Circuit"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -493,15 +519,15 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_virtual_circuit",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "VirtualCircuit")
+			setupLog.Error(err, "unable to create controller", "controller", "Circuit")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "vlan.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Vlan",
 	}:
-		if err := (&controllersmetal.VlanReconciler{
+		if err := (&controllersvlan.VlanReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Vlan"),
 			Scheme:           mgr.GetScheme(),
@@ -515,11 +541,11 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "volume.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Volume",
 	}:
-		if err := (&controllersmetal.VolumeReconciler{
+		if err := (&controllersvolume.VolumeReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Volume"),
 			Scheme:           mgr.GetScheme(),
@@ -533,13 +559,13 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "volume.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "VolumeAttachment",
+		Kind:    "Attachment",
 	}:
-		if err := (&controllersmetal.VolumeAttachmentReconciler{
+		if err := (&controllersvolume.AttachmentReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("VolumeAttachment"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Attachment"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         equinixmetal.Provider(),
@@ -547,7 +573,7 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			TypeName:         "metal_volume_attachment",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "VolumeAttachment")
+			setupLog.Error(err, "unable to create controller", "controller", "Attachment")
 			return err
 		}
 
@@ -561,165 +587,165 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	switch gvk {
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "bgp.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "BgpSession",
+		Kind:    "Session",
 	}:
-		if err := (&metalv1alpha1.BgpSession{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "BgpSession")
+		if err := (&bgpv1alpha1.Session{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Session")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "connection.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Connection",
 	}:
-		if err := (&metalv1alpha1.Connection{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&connectionv1alpha1.Connection{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Connection")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "device.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Device",
 	}:
-		if err := (&metalv1alpha1.Device{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&devicev1alpha1.Device{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Device")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "device.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "DeviceNetworkType",
+		Kind:    "NetworkType",
 	}:
-		if err := (&metalv1alpha1.DeviceNetworkType{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "DeviceNetworkType")
+		if err := (&devicev1alpha1.NetworkType{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "NetworkType")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "ip.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "IpAttachment",
+		Kind:    "Attachment",
 	}:
-		if err := (&metalv1alpha1.IpAttachment{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "IpAttachment")
+		if err := (&ipv1alpha1.Attachment{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Attachment")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "organization.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Organization",
 	}:
-		if err := (&metalv1alpha1.Organization{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&organizationv1alpha1.Organization{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Organization")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "port.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "PortVLANAttachment",
+		Kind:    "VlanAttachment",
 	}:
-		if err := (&metalv1alpha1.PortVLANAttachment{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "PortVLANAttachment")
+		if err := (&portv1alpha1.VlanAttachment{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "VlanAttachment")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "project.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Project",
 	}:
-		if err := (&metalv1alpha1.Project{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&projectv1alpha1.Project{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Project")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "project.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "ProjectAPIKey",
+		Kind:    "ApiKey",
 	}:
-		if err := (&metalv1alpha1.ProjectAPIKey{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "ProjectAPIKey")
+		if err := (&projectv1alpha1.ApiKey{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "ApiKey")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "ProjectSSHKey",
-	}:
-		if err := (&metalv1alpha1.ProjectSSHKey{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "ProjectSSHKey")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "ReservedIPBlock",
-	}:
-		if err := (&metalv1alpha1.ReservedIPBlock{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "ReservedIPBlock")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "SpotMarketRequest",
-	}:
-		if err := (&metalv1alpha1.SpotMarketRequest{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "SpotMarketRequest")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "project.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "SshKey",
 	}:
-		if err := (&metalv1alpha1.SshKey{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&projectv1alpha1.SshKey{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "SshKey")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "reserved.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "UserAPIKey",
+		Kind:    "IpBlock",
 	}:
-		if err := (&metalv1alpha1.UserAPIKey{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "UserAPIKey")
+		if err := (&reservedv1alpha1.IpBlock{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "IpBlock")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "spot.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "VirtualCircuit",
+		Kind:    "MarketRequest",
 	}:
-		if err := (&metalv1alpha1.VirtualCircuit{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "VirtualCircuit")
+		if err := (&spotv1alpha1.MarketRequest{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "MarketRequest")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "ssh.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Key",
+	}:
+		if err := (&sshv1alpha1.Key{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Key")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "user.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "ApiKey",
+	}:
+		if err := (&userv1alpha1.ApiKey{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "ApiKey")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "virtual.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Circuit",
+	}:
+		if err := (&virtualv1alpha1.Circuit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Circuit")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "vlan.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Vlan",
 	}:
-		if err := (&metalv1alpha1.Vlan{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&vlanv1alpha1.Vlan{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Vlan")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "volume.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Volume",
 	}:
-		if err := (&metalv1alpha1.Volume{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&volumev1alpha1.Volume{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Volume")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "metal.equinixmetal.kubeform.com",
+		Group:   "volume.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "VolumeAttachment",
+		Kind:    "Attachment",
 	}:
-		if err := (&metalv1alpha1.VolumeAttachment{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "VolumeAttachment")
+		if err := (&volumev1alpha1.Attachment{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Attachment")
 			return err
 		}
 
