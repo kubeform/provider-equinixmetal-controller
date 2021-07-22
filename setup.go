@@ -78,8 +78,8 @@ var runningControllers = struct {
 
 func watchCRD(ctx context.Context, crdClient *clientset.Clientset, vwcClient *admissionregistrationv1.AdmissionregistrationV1Client, stopCh <-chan struct{}, mgr manager.Manager, auditor *auditlib.EventPublisher, watchOnlyDefault bool) error {
 	informerFactory := informers.NewSharedInformerFactory(crdClient, time.Second*30)
-	i := informerFactory.Apiextensions().V1beta1().CustomResourceDefinitions().Informer()
-	l := informerFactory.Apiextensions().V1beta1().CustomResourceDefinitions().Lister()
+	i := informerFactory.Apiextensions().V1().CustomResourceDefinitions().Informer()
+	l := informerFactory.Apiextensions().V1().CustomResourceDefinitions().Lister()
 
 	i.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
