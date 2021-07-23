@@ -3,7 +3,7 @@
 
 # provider-equinixmetal-controller
 
-Kubeform controller for [Terraform Linode Provider](https://github.com/equinix/terraform-provider-metal)
+Kubeform controller for [Terraform Equinix Metal Provider](https://github.com/equinix/terraform-provider-metal)
 
 ## Installation
 
