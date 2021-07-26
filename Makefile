@@ -376,7 +376,7 @@ install:
 		--set kubeform-provider.operator.repository=$(BIN) \
 		--set kubeform-provider.operator.tag=$(TAG) \
 		--set imagePullPolicy=$(IMAGE_PULL_POLICY) \
-		--set crds.domain=true \
+		--set crds.ssh=true \
 		$(IMAGE_PULL_SECRETS);
 
 .PHONY: uninstall
