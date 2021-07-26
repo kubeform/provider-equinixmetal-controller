@@ -158,7 +158,7 @@ func watchCRD(ctx context.Context, crdClient *clientset.Clientset, vwcClient *ad
 }
 
 func createEmptyVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Client, gvk schema.GroupVersionKind) error {
-	vwcName := strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-") + "-vwc"
+	vwcName := strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-")
 	_, err := vwcClient.ValidatingWebhookConfigurations().Get(context.TODO(), vwcName, metav1.GetOptions{})
 	if err == nil || !(errors.IsNotFound(err)) {
 		return err
@@ -170,7 +170,7 @@ func createEmptyVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Cl
 			APIVersion: "admissionregistration.k8s.io/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-") + "-vwc",
+			Name: strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-"),
 			Labels: map[string]string{
 				"app.kubernetes.io/instance": "equinixmetal.kubeform.com",
 				"app.kubernetes.io/part-of":  "kubeform.com",
@@ -186,7 +186,7 @@ func createEmptyVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Cl
 }
 
 func updateVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Client, gvk schema.GroupVersionKind) error {
-	vwcName := strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-") + "-vwc"
+	vwcName := strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-")
 	vwc, err := vwcClient.ValidatingWebhookConfigurations().Get(context.TODO(), vwcName, metav1.GetOptions{})
 	if err != nil {
 		return err
@@ -195,13 +195,11 @@ func updateVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Client,
 	path := "/validate-" + strings.ReplaceAll(strings.ToLower(gvk.Group), ".", "-") + "-v1alpha1-" + strings.ToLower(gvk.Kind)
 	fail := arv1.Fail
 	sideEffects := arv1.SideEffectClassNone
-	admissionReviewVersions := []string{"v1"}
+	admissionReviewVersions := []string{"v1beta1"}
 
 	rules := []arv1.RuleWithOperations{
 		{
 			Operations: []arv1.OperationType{
-				arv1.Create,
-				arv1.Update,
 				arv1.Delete,
 			},
 			Rule: arv1.Rule{
