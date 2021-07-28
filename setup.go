@@ -42,6 +42,7 @@ import (
 	bgpv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/bgp/v1alpha1"
 	connectionv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/connection/v1alpha1"
 	devicev1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/device/v1alpha1"
+	gatewayv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/gateway/v1alpha1"
 	ipv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/ip/v1alpha1"
 	organizationv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/organization/v1alpha1"
 	portv1alpha1 "kubeform.dev/provider-equinixmetal-api/apis/port/v1alpha1"
@@ -56,6 +57,7 @@ import (
 	controllersbgp "kubeform.dev/provider-equinixmetal-controller/controllers/bgp"
 	controllersconnection "kubeform.dev/provider-equinixmetal-controller/controllers/connection"
 	controllersdevice "kubeform.dev/provider-equinixmetal-controller/controllers/device"
+	controllersgateway "kubeform.dev/provider-equinixmetal-controller/controllers/gateway"
 	controllersip "kubeform.dev/provider-equinixmetal-controller/controllers/ip"
 	controllersorganization "kubeform.dev/provider-equinixmetal-controller/controllers/organization"
 	controllersport "kubeform.dev/provider-equinixmetal-controller/controllers/port"
@@ -320,6 +322,24 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
 			setupLog.Error(err, "unable to create controller", "controller", "NetworkType")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "gateway.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Gateway",
+	}:
+		if err := (&controllersgateway.GatewayReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Gateway"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         equinixmetal.Provider(),
+			Resource:         equinixmetal.Provider().ResourcesMap["metal_gateway"],
+			TypeName:         "metal_gateway",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Gateway")
 			return err
 		}
 	case schema.GroupVersionKind{
@@ -618,6 +638,15 @@ func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	}:
 		if err := (&devicev1alpha1.NetworkType{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "NetworkType")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "gateway.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Gateway",
+	}:
+		if err := (&gatewayv1alpha1.Gateway{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Gateway")
 			return err
 		}
 	case schema.GroupVersionKind{

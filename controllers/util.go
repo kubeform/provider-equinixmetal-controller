@@ -185,6 +185,14 @@ func reconcile(rClient client.Client, provider *tfschema.Provider, ctx context.C
 		return err
 	}
 
+	changed, err := hasResourceChanged(combineRaw, rawStatus, res)
+	if err != nil {
+		return err
+	}
+	if !changed {
+		return nil
+	}
+
 	requireNew, priorState, planResp, plannedState, err := checkRequireNewOrNot(combineRaw, rawStatus, res, server, tName)
 	if err != nil {
 		return err
@@ -272,16 +280,35 @@ func initialUpdateStatus(rClient client.Client, ctx context.Context, gv schema.G
 		return err
 	}
 
-	var newCondi []kmapi.Condition
+	data, err := meta.MarshalToJson(obj, gv)
+	if err != nil {
+		return err
+	}
+
+	typedObj, err := meta.UnmarshalFromJSON(data, gv)
+	if err != nil {
+		return err
+	}
+
+	typedStruct := structs.New(typedObj)
+	conditionsVal := reflect.ValueOf(typedStruct.Field("Status").Field("Conditions").Value())
+	conditions := conditionsVal.Interface().([]kmapi.Condition)
+	if kmapi.HasCondition(conditions, "Stalled") {
+		return nil
+	}
+
 	phase := status.InProgressStatus
 	if flag {
-		newCondi = kmapi.SetCondition(newCondi, kmapi.NewCondition("Reconciling", "Kubeform is currently reconciling "+obj.GetKind()+" resource", objGen))
+		conditions = kmapi.SetCondition(conditions, kmapi.NewCondition("Reconciling", "Kubeform is currently reconciling "+obj.GetKind()+" resource", objGen))
 	} else {
-		newCondi = kmapi.SetCondition(newCondi, kmapi.NewCondition("Stalled", er.Error(), objGen))
+		conditions = kmapi.SetCondition(conditions, kmapi.NewCondition("Stalled", er.Error(), objGen))
 		phase = status.FailedStatus
 	}
 
-	err = setNestedFieldNoCopy(obj.Object, newCondi, "status", "conditions")
+	err = setNestedFieldNoCopy(obj.Object, conditions, "status", "conditions")
+	if err != nil {
+		return err
+	}
 	if err = rClient.Status().Update(ctx, obj); err != nil {
 		return err
 	}
@@ -292,6 +319,9 @@ func initialUpdateStatus(rClient client.Client, ctx context.Context, gv schema.G
 func finalUpdateStatus(rClient client.Client, ctx context.Context, gv schema.GroupVersion, obj *unstructured.Unstructured) error {
 	var newCondi []kmapi.Condition
 	err := setNestedFieldNoCopy(obj.Object, newCondi, "status", "conditions")
+	if err != nil {
+		return err
+	}
 	if err = rClient.Status().Update(ctx, obj); err != nil {
 		return err
 	}
@@ -408,7 +438,7 @@ func updateTheObject(priorState []byte, plannedState []byte, planResp *tfprotov5
 	}
 
 	if !isUpdateSupported(applyResp.Diagnostics) {
-		return cty.Value{}, false, err
+		return cty.Value{}, false, nil
 	}
 
 	err = diagToError(applyResp.Diagnostics)
@@ -423,6 +453,18 @@ func updateTheObject(priorState []byte, plannedState []byte, planResp *tfprotov5
 	}
 
 	return newStateVal, true, nil
+}
+
+func hasResourceChanged(combineRaw map[string]interface{}, copyrawStatus map[string]interface{}, res *tfschema.Resource) (bool, error) {
+	stateVal := HCL2ValueFromConfigValue(copyrawStatus)
+	proposedPlanVal := HCL2ValueFromConfigValue(combineRaw)
+
+	diff, err := tfschema.DiffFromValues(context.TODO(), stateVal, proposedPlanVal, stripResourceModifiers(res))
+	if err != nil {
+		return false, err
+	}
+
+	return diff != nil, nil
 }
 
 func checkRequireNewOrNot(combineRaw map[string]interface{}, copyrawStatus map[string]interface{}, res *tfschema.Resource, server *tfschema.GRPCProviderServer, tName string) (bool, []byte, *tfprotov5.PlanResourceChangeResponse, []byte, error) {
@@ -1089,21 +1131,44 @@ func isUpdateSupported(diags []*tfprotov5.Diagnostic) bool {
 	return true
 }
 
-//func convertCamelToSnakeCase(in map[string]interface{}) map[string]interface{} {
-//	out := make(map[string]interface{})
-//	for key, val := range in {
-//		switch val.(type) {
-//		case map[string]interface{}:
-//			out[key] = convertCamelToSnakeCase(val.(map[string]interface{}))
-//		case []map[string]interface{}:
-//			tempMap := make([]map[string]interface{}, len(val.([]map[string]interface{})))
-//			for i := range val.([]map[string]interface{}) {
-//				tempMap[i] = convertCamelToSnakeCase(val.([]map[string]interface{})[i])
-//			}
-//			out[key] = tempMap
-//		default:
-//			out[key] = val
-//		}
-//	}
-//	return out
-//}
+// stripResourceModifiers takes a *schema.Resource and returns a deep copy with all
+// StateFuncs and CustomizeDiffs removed. This will be used during apply to
+// create a diff from a planned state where the diff modifications have already
+// been applied.
+func stripResourceModifiers(r *tfschema.Resource) *tfschema.Resource {
+	if r == nil {
+		return nil
+	}
+	// start with a shallow copy
+	newResource := new(tfschema.Resource)
+	*newResource = *r
+
+	newResource.CustomizeDiff = nil
+	newResource.Schema = map[string]*tfschema.Schema{}
+
+	for k, s := range r.Schema {
+		newResource.Schema[k] = stripSchema(s)
+	}
+
+	return newResource
+}
+
+func stripSchema(s *tfschema.Schema) *tfschema.Schema {
+	if s == nil {
+		return nil
+	}
+	// start with a shallow copy
+	newSchema := new(tfschema.Schema)
+	*newSchema = *s
+
+	newSchema.StateFunc = nil
+
+	switch e := newSchema.Elem.(type) {
+	case *tfschema.Schema:
+		newSchema.Elem = stripSchema(e)
+	case *tfschema.Resource:
+		newSchema.Elem = stripResourceModifiers(e)
+	}
+
+	return newSchema
+}
