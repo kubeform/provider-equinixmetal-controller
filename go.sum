@@ -173,8 +173,8 @@ github.com/emirpasic/gods v1.12.0 h1:QAUIPSaCu4G+POclxeqb3F+WPpdKqFGlw36+yOzGlrg
 github.com/emirpasic/gods v1.12.0/go.mod h1:YfzfFFoVP/catgzJb4IKIqXjX78Ha8FMSDh3ymbK86o=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
-github.com/equinix/terraform-provider-metal v1.1.1-0.20210721135909-47bb95202dd9 h1:WGHt8xAWzgQgg7TAX2iLJ1bUlEUUpBMMddLUBw154Ac=
-github.com/equinix/terraform-provider-metal v1.1.1-0.20210721135909-47bb95202dd9/go.mod h1:esmVTt6MwMCbx4PJJR5pcG5lUzo0u7t+2R30UPxdvd4=
+github.com/equinix/terraform-provider-metal v1.1.1-0.20210727130052-a55db9bd1897 h1:qjrx4Y2rPnCh3ECdVnlSID2ERs4N789lrSRC/rvProM=
+github.com/equinix/terraform-provider-metal v1.1.1-0.20210727130052-a55db9bd1897/go.mod h1:esmVTt6MwMCbx4PJJR5pcG5lUzo0u7t+2R30UPxdvd4=
 github.com/evanphx/json-patch v0.5.2/go.mod h1:ZWS5hhDbVDyob71nXKNL0+PWn6ToqBHMikGIFbs31qQ=
 github.com/evanphx/json-patch v4.5.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/evanphx/json-patch v4.9.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
@@ -1062,8 +1062,8 @@ kmodules.xyz/resource-metadata v0.5.7 h1:5xjq5pEp5hZK+jdkY/4wGk/FMtTyvQ9LlErh7lQ
 kmodules.xyz/resource-metadata v0.5.7/go.mod h1:Jdi7zBXRwwFTOR0CxwKxqJhsDVIilhrgNipPjnKLyrs=
 kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5 h1:kpCzsugm64OMYV9ywBIOXbGN7z5ifK+rnGln+f3Gct4=
 kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5/go.mod h1:kfiYdu87pCcrydTGaLXs4QMFx1fLNP5Yov2KxgrkCm0=
-kubeform.dev/provider-equinixmetal-api v0.1.0 h1:KePTHq+XrrvzAbpL3CutFY3njawVjdHxXStbcDH/zHs=
-kubeform.dev/provider-equinixmetal-api v0.1.0/go.mod h1:REEglnoy2F6EGlEcPpFq6wr2FzgKTp6ThrT5J/Ft1NY=
+kubeform.dev/provider-equinixmetal-api v0.1.1-0.20210728010738-5c4f3cd280c3 h1:6kmD3MyUfqp+9uUp6xtMr8oTj/TaiW5eK6KE9stk/zU=
+kubeform.dev/provider-equinixmetal-api v0.1.1-0.20210728010738-5c4f3cd280c3/go.mod h1:REEglnoy2F6EGlEcPpFq6wr2FzgKTp6ThrT5J/Ft1NY=
 rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.0.15/go.mod h1:LEScyzhFmoF5pso/YSeBstl57mOzx9xlU9n85RGrDQg=

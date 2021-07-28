@@ -101,7 +101,7 @@ github.com/davecgh/go-spew/spew
 # github.com/emicklei/go-restful v2.9.5+incompatible
 github.com/emicklei/go-restful
 github.com/emicklei/go-restful/log
-# github.com/equinix/terraform-provider-metal v1.1.1-0.20210721135909-47bb95202dd9
+# github.com/equinix/terraform-provider-metal v1.1.1-0.20210727130052-a55db9bd1897
 ## explicit
 github.com/equinix/terraform-provider-metal/metal
 github.com/equinix/terraform-provider-metal/version
@@ -1090,7 +1090,7 @@ kmodules.xyz/resource-metadata/pkg/graph
 # kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5
 ## explicit
 kubeform.dev/apimachinery/api/v1alpha1
-# kubeform.dev/provider-equinixmetal-api v0.1.0
+# kubeform.dev/provider-equinixmetal-api v0.1.1-0.20210728010738-5c4f3cd280c3
 ## explicit
 kubeform.dev/provider-equinixmetal-api/api/provider
 kubeform.dev/provider-equinixmetal-api/apis/bgp
@@ -1099,6 +1099,8 @@ kubeform.dev/provider-equinixmetal-api/apis/connection
 kubeform.dev/provider-equinixmetal-api/apis/connection/v1alpha1
 kubeform.dev/provider-equinixmetal-api/apis/device
 kubeform.dev/provider-equinixmetal-api/apis/device/v1alpha1
+kubeform.dev/provider-equinixmetal-api/apis/gateway
+kubeform.dev/provider-equinixmetal-api/apis/gateway/v1alpha1
 kubeform.dev/provider-equinixmetal-api/apis/ip
 kubeform.dev/provider-equinixmetal-api/apis/ip/v1alpha1
 kubeform.dev/provider-equinixmetal-api/apis/organization
