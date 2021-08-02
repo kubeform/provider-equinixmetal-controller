@@ -73,6 +73,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
+var _provider = equinixmetal.Provider()
+
 var runningControllers = struct {
 	sync.RWMutex
 	mp map[schema.GroupVersionKind]bool
@@ -262,8 +264,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Session"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_bgp_session"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_bgp_session"],
 			TypeName:         "metal_bgp_session",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -280,8 +282,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Connection"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_connection"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_connection"],
 			TypeName:         "metal_connection",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -298,8 +300,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Device"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_device"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_device"],
 			TypeName:         "metal_device",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -316,8 +318,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("NetworkType"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_device_network_type"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_device_network_type"],
 			TypeName:         "metal_device_network_type",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -334,8 +336,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Gateway"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_gateway"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_gateway"],
 			TypeName:         "metal_gateway",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -352,8 +354,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Attachment"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_ip_attachment"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_ip_attachment"],
 			TypeName:         "metal_ip_attachment",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -370,8 +372,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Organization"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_organization"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_organization"],
 			TypeName:         "metal_organization",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -388,8 +390,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("VlanAttachment"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_port_vlan_attachment"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_port_vlan_attachment"],
 			TypeName:         "metal_port_vlan_attachment",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -406,8 +408,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Project"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_project"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_project"],
 			TypeName:         "metal_project",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -424,8 +426,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("ApiKey"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_project_api_key"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_project_api_key"],
 			TypeName:         "metal_project_api_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -442,8 +444,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("SshKey"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_project_ssh_key"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_project_ssh_key"],
 			TypeName:         "metal_project_ssh_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -460,8 +462,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("IpBlock"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_reserved_ip_block"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_reserved_ip_block"],
 			TypeName:         "metal_reserved_ip_block",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -478,8 +480,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("MarketRequest"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_spot_market_request"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_spot_market_request"],
 			TypeName:         "metal_spot_market_request",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -496,8 +498,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Key"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_ssh_key"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_ssh_key"],
 			TypeName:         "metal_ssh_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -514,8 +516,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("ApiKey"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_user_api_key"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_user_api_key"],
 			TypeName:         "metal_user_api_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -532,8 +534,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Circuit"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_virtual_circuit"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_virtual_circuit"],
 			TypeName:         "metal_virtual_circuit",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -550,8 +552,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Vlan"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_vlan"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_vlan"],
 			TypeName:         "metal_vlan",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -568,8 +570,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Volume"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_volume"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_volume"],
 			TypeName:         "metal_volume",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -586,8 +588,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Attachment"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         equinixmetal.Provider(),
-			Resource:         equinixmetal.Provider().ResourcesMap["metal_volume_attachment"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["metal_volume_attachment"],
 			TypeName:         "metal_volume_attachment",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
