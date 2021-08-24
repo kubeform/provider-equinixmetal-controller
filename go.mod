@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/equinix/terraform-provider-metal v1.1.1-0.20210727130052-a55db9bd1897
 	github.com/fatih/structs v1.1.0
-	github.com/go-errors/errors v1.0.1
 	github.com/go-logr/logr v0.4.0
 	github.com/gobuffalo/flect v0.2.3
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
@@ -26,8 +25,8 @@ require (
 	k8s.io/client-go v0.21.1
 	k8s.io/klog/v2 v2.8.0
 	kmodules.xyz/client-go v0.0.0-20210822203828-5e9cebbf1dfa
-	kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5
-	kubeform.dev/provider-equinixmetal-api v0.3.1-0.20210824075855-9b77b46c8e2b
+	kubeform.dev/apimachinery v0.0.0-20210824104859-ba5604d5a1cc
+	kubeform.dev/provider-equinixmetal-api v0.3.1-0.20210824193829-561723bd1b17
 	sigs.k8s.io/cli-utils v0.25.0
 	sigs.k8s.io/controller-runtime v0.9.0
 )
