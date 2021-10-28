@@ -50,8 +50,9 @@ func resourceMetalDevice() *schema.Resource {
 
 			"hostname": {
 				Type:        schema.TypeString,
-				Description: "The device name",
-				Required:    true,
+				Description: "The device hostname used in deployments taking advantage of Layer3 DHCP or metadata service configuration.",
+				Optional:    true,
+				Computed:    true,
 			},
 
 			"description": {
@@ -131,7 +132,8 @@ func resourceMetalDevice() *schema.Resource {
 			"billing_cycle": {
 				Type:        schema.TypeString,
 				Description: "monthly or hourly",
-				Required:    true,
+				Optional:    true,
+				Computed:    true,
 				ForceNew:    true,
 			},
 			"state": {
@@ -353,6 +355,20 @@ func resourceMetalDevice() *schema.Resource {
 				Default:     false,
 				ForceNew:    false,
 			},
+			"termination_time": {
+				Type:        schema.TypeString,
+				Description: "Timestamp for device termination. For example \"2021-09-03T16:32:00+03:00\". If you don't supply timezone info, timestamp is assumed to be in UTC.",
+				Optional:    true,
+				ForceNew:    false,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					_, err := time.ParseInLocation(time.RFC3339, val.(string), time.UTC)
+					if err != nil {
+						errs = []error{err}
+					}
+					return
+				},
+			},
+
 			"reinstall": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
@@ -461,6 +477,14 @@ func resourceMetalDeviceCreate(d *schema.ResourceData, meta interface{}) error {
 		createRequest.IPXEScriptURL = attr.(string)
 	}
 
+	if attr, ok := d.GetOk("termination_time"); ok {
+		tt, err := time.ParseInLocation(time.RFC3339, attr.(string), time.UTC)
+		if err != nil {
+			return err
+		}
+		createRequest.TerminationTime = &packngo.Timestamp{Time: tt}
+	}
+
 	if attr, ok := d.GetOk("hardware_reservation_id"); ok {
 		createRequest.HardwareReservationID = attr.(string)
 	} else {
@@ -533,14 +557,6 @@ func resourceMetalDeviceCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	/*
-			    Possibly wait for device network state
-		    	_, err := waitForDeviceAttribute(d, []string{"layer3"}, []string{"hybrid", "layer2-bonded", "layer2-individual"}, "network_type", meta)
-		        if err != nil {
-					return err
-				}
-	*/
-
 	return resourceMetalDeviceRead(d, meta)
 }
 
@@ -586,7 +602,7 @@ func resourceMetalDeviceRead(d *schema.ResourceData, meta interface{}) error {
 
 		storageString, err := structure.NormalizeJsonString(string(rawStorageBytes))
 		if err != nil {
-			return fmt.Errorf("[ERR] Errori normalizing storage JSON string for device (%s): %s", d.Id(), err)
+			return fmt.Errorf("[ERR] Error normalizing storage JSON string for device (%s): %s", d.Id(), err)
 		}
 		d.Set("storage", storageString)
 	}
@@ -604,6 +620,11 @@ func resourceMetalDeviceRead(d *schema.ResourceData, meta interface{}) error {
 	fdv := "force_detach_volumes"
 	if _, ok := d.GetOk(fdv); !ok {
 		d.Set(fdv, nil)
+
+		tt := "termination_time"
+		if _, ok := d.GetOk(tt); !ok {
+			d.Set(tt, nil)
+		}
 	}
 
 	d.Set("tags", device.Tags)

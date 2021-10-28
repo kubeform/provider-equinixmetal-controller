@@ -105,6 +105,14 @@ var (
 		{
 			Group:    "port.equinixmetal.kubeform.com",
 			Version:  "v1alpha1",
+			Resource: "ports",
+		}: {
+			JsonIt:       controllers.GetJSONItr(portv1alpha1.GetEncoder(), portv1alpha1.GetDecoder()),
+			ResourceType: "metal_port",
+		},
+		{
+			Group:    "port.equinixmetal.kubeform.com",
+			Version:  "v1alpha1",
 			Resource: "vlanattachments",
 		}: {
 			JsonIt:       controllers.GetJSONItr(portv1alpha1.GetEncoder(), portv1alpha1.GetDecoder()),
