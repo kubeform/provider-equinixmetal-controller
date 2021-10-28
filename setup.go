@@ -377,6 +377,23 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 	case schema.GroupVersionKind{
 		Group:   "port.equinixmetal.kubeform.com",
 		Version: "v1alpha1",
+		Kind:    "Port",
+	}:
+		if err := (&controllersport.PortReconciler{
+			Client:   mgr.GetClient(),
+			Log:      ctrl.Log.WithName("controllers").WithName("Port"),
+			Scheme:   mgr.GetScheme(),
+			Gvk:      gvk,
+			Provider: _provider,
+			Resource: _provider.ResourcesMap["metal_port"],
+			TypeName: "metal_port",
+		}).SetupWithManager(ctx, mgr, auditor, restrictToNamespace); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Port")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "port.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
 		Kind:    "VlanAttachment",
 	}:
 		if err := (&controllersport.VlanAttachmentReconciler{
@@ -649,6 +666,15 @@ func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	}:
 		if err := (&organizationv1alpha1.Organization{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Organization")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "port.equinixmetal.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Port",
+	}:
+		if err := (&portv1alpha1.Port{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Port")
 			return err
 		}
 	case schema.GroupVersionKind{

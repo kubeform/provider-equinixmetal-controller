@@ -43,7 +43,6 @@ var _ webhook.Validator = &Circuit{}
 
 var circuitForceNewList = map[string]bool{
 	"/connection_id": true,
-	"/name":          true,
 	"/nni_vlan":      true,
 	"/port_id":       true,
 	"/project_id":    true,

@@ -60,11 +60,15 @@ type CircuitSpecResource struct {
 
 	// UUID of Connection where the VC is scoped to
 	ConnectionID *string `json:"connectionID" tf:"connection_id"`
+	// Description of the Virtual Circuit resource
+	// +optional
+	Description *string `json:"description,omitempty" tf:"description"`
 	// Name of the Virtual Circuit resource
 	// +optional
 	Name *string `json:"name,omitempty" tf:"name"`
-	// Equinix Metal network-to-network VLAN ID
-	NniVLAN *int64 `json:"nniVLAN" tf:"nni_vlan"`
+	// Equinix Metal network-to-network VLAN ID (optional when the connection has mode=tunnel)
+	// +optional
+	NniVLAN *int64 `json:"nniVLAN,omitempty" tf:"nni_vlan"`
 	// Nni VLAN ID parameter, see https://metal.equinix.com/developers/docs/networking/fabric/
 	// +optional
 	NniVnid *int64 `json:"nniVnid,omitempty" tf:"nni_vnid"`
@@ -72,9 +76,15 @@ type CircuitSpecResource struct {
 	PortID *string `json:"portID" tf:"port_id"`
 	// UUID of the Project where the VC is scoped to
 	ProjectID *string `json:"projectID" tf:"project_id"`
+	// Description of the Virtual Circuit speed. This is for information purposes and is computed when the connection type is shared.
+	// +optional
+	Speed *string `json:"speed,omitempty" tf:"speed"`
 	// Status of the virtual circuit resource
 	// +optional
 	Status *string `json:"status,omitempty" tf:"status"`
+	// Tags attached to the virtual circuit
+	// +optional
+	Tags []string `json:"tags,omitempty" tf:"tags"`
 	// UUID of the VLAN to associate
 	VlanID *string `json:"vlanID" tf:"vlan_id"`
 	// VNID VLAN parameter, see https://metal.equinix.com/developers/docs/networking/fabric/

@@ -2,6 +2,7 @@ package metal
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -13,6 +14,7 @@ func resourceMetalVirtualCircuit() *schema.Resource {
 	return &schema.Resource{
 		Read:   resourceMetalVirtualCircuitRead,
 		Create: resourceMetalVirtualCircuitCreate,
+		Update: resourceMetalVirtualCircuitUpdate,
 		Delete: resourceMetalVirtualCircuitDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
@@ -41,12 +43,28 @@ func resourceMetalVirtualCircuit() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Name of the Virtual Circuit resource",
-				ForceNew:    true,
+			},
+			"description": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Description of the Virtual Circuit resource",
+			},
+			"speed": {
+				Type:        schema.TypeString,
+				Description: "Description of the Virtual Circuit speed. This is for information purposes and is computed when the connection type is shared.",
+				Optional:    true,
+				Computed:    true,
+			},
+			"tags": {
+				Type:        schema.TypeList,
+				Description: "Tags attached to the virtual circuit",
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"nni_vlan": {
 				Type:        schema.TypeInt,
-				Required:    true,
-				Description: "Equinix Metal network-to-network VLAN ID",
+				Description: "Equinix Metal network-to-network VLAN ID (optional when the connection has mode=tunnel)",
+				Optional:    true,
 				ForceNew:    true,
 			},
 			"vlan_id": {
@@ -78,12 +96,23 @@ func resourceMetalVirtualCircuitCreate(d *schema.ResourceData, meta interface{})
 	client := meta.(*packngo.Client)
 	vncr := packngo.VCCreateRequest{
 		VirtualNetworkID: d.Get("vlan_id").(string),
-		NniVLAN:          d.Get("nni_vlan").(int),
 		Name:             d.Get("name").(string),
+		Description:      d.Get("description").(string),
+		Speed:            d.Get("speed").(string),
 	}
+
 	connId := d.Get("connection_id").(string)
 	portId := d.Get("port_id").(string)
 	projectId := d.Get("project_id").(string)
+
+	tags := d.Get("tags.#").(int)
+	if tags > 0 {
+		vncr.Tags = convertStringArr(d.Get("tags").([]interface{}))
+	}
+
+	if nniVlan, ok := d.GetOk("nni_vlan"); ok {
+		vncr.NniVLAN = nniVlan.(int)
+	}
 
 	conn, _, err := client.Connections.Get(connId, nil)
 	if err != nil {
@@ -131,12 +160,20 @@ func resourceMetalVirtualCircuitRead(d *schema.ResourceData, meta interface{}) e
 		//"connection_id": vc.Connection.ID,
 		"project_id": vc.Project.ID,
 		"port_id":    vc.Port.ID,
-		"vlan_id":    vc.VirtualNetwork.ID,
-		"status":     vc.Status,
-		"nni_vlan":   vc.NniVLAN,
-		"vnid":       vc.VNID,
-		"nni_vnid":   vc.NniVNID,
-		"name":       vc.Name,
+		"vlan_id": func(d *schema.ResourceData, k string) error {
+			if vc.VirtualNetwork != nil {
+				return d.Set(k, vc.VirtualNetwork.ID)
+			}
+			return nil
+		},
+		"status":      vc.Status,
+		"nni_vlan":    vc.NniVLAN,
+		"vnid":        vc.VNID,
+		"nni_vnid":    vc.NniVNID,
+		"name":        vc.Name,
+		"speed":       vc.Speed,
+		"description": vc.Description,
+		"tags":        vc.Tags,
 	})
 }
 
@@ -161,12 +198,61 @@ func getVCStateWaiter(client *packngo.Client, id string, timeout time.Duration, 
 
 }
 
+func resourceMetalVirtualCircuitUpdate(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*packngo.Client)
+
+	ur := packngo.VCUpdateRequest{}
+	if d.HasChange("vnid") {
+		vnid := d.Get("vnid").(string)
+		ur.VirtualNetworkID = &vnid
+	}
+
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		ur.Name = &name
+	}
+
+	if d.HasChange("description") {
+		desc := d.Get("description").(string)
+		ur.Description = &desc
+	}
+
+	if d.HasChange("speed") {
+		speed := d.Get("speed").(string)
+		ur.Speed = speed
+	}
+
+	if d.HasChange("tags") {
+		ts := d.Get("tags")
+		sts := []string{}
+
+		switch ts.(type) {
+		case []interface{}:
+			for _, v := range ts.([]interface{}) {
+				sts = append(sts, v.(string))
+			}
+			ur.Tags = &sts
+		default:
+			return friendlyError(fmt.Errorf("garbage in tags: %s", ts))
+		}
+	}
+
+	if !reflect.DeepEqual(ur, packngo.VCUpdateRequest{}) {
+		if _, _, err := client.VirtualCircuits.Update(d.Id(), &ur, nil); err != nil {
+			return friendlyError(err)
+		}
+
+	}
+	return resourceMetalVirtualCircuitRead(d, meta)
+}
+
 func resourceMetalVirtualCircuitDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*packngo.Client)
 	// we first need to disconnect VLAN from the VC
+	empty := ""
 	_, _, err := client.VirtualCircuits.Update(
 		d.Id(),
-		&packngo.VCUpdateRequest{VirtualNetworkID: nil},
+		&packngo.VCUpdateRequest{VirtualNetworkID: &empty},
 		nil,
 	)
 	if err != nil {
