@@ -44,170 +44,168 @@ type Data struct {
 	ResourceType string
 }
 
-var (
-	allJsonIt = map[schema.GroupVersionResource]Data{
-		{
-			Group:    "bgp.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "sessions",
-		}: {
-			JsonIt:       controllers.GetJSONItr(bgpv1alpha1.GetEncoder(), bgpv1alpha1.GetDecoder()),
-			ResourceType: "metal_bgp_session",
-		},
-		{
-			Group:    "connection.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "connections",
-		}: {
-			JsonIt:       controllers.GetJSONItr(connectionv1alpha1.GetEncoder(), connectionv1alpha1.GetDecoder()),
-			ResourceType: "metal_connection",
-		},
-		{
-			Group:    "device.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "devices",
-		}: {
-			JsonIt:       controllers.GetJSONItr(devicev1alpha1.GetEncoder(), devicev1alpha1.GetDecoder()),
-			ResourceType: "metal_device",
-		},
-		{
-			Group:    "device.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "networktypes",
-		}: {
-			JsonIt:       controllers.GetJSONItr(devicev1alpha1.GetEncoder(), devicev1alpha1.GetDecoder()),
-			ResourceType: "metal_device_network_type",
-		},
-		{
-			Group:    "gateway.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "gateways",
-		}: {
-			JsonIt:       controllers.GetJSONItr(gatewayv1alpha1.GetEncoder(), gatewayv1alpha1.GetDecoder()),
-			ResourceType: "metal_gateway",
-		},
-		{
-			Group:    "ip.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "attachments",
-		}: {
-			JsonIt:       controllers.GetJSONItr(ipv1alpha1.GetEncoder(), ipv1alpha1.GetDecoder()),
-			ResourceType: "metal_ip_attachment",
-		},
-		{
-			Group:    "organization.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "organizations",
-		}: {
-			JsonIt:       controllers.GetJSONItr(organizationv1alpha1.GetEncoder(), organizationv1alpha1.GetDecoder()),
-			ResourceType: "metal_organization",
-		},
-		{
-			Group:    "port.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "ports",
-		}: {
-			JsonIt:       controllers.GetJSONItr(portv1alpha1.GetEncoder(), portv1alpha1.GetDecoder()),
-			ResourceType: "metal_port",
-		},
-		{
-			Group:    "port.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "vlanattachments",
-		}: {
-			JsonIt:       controllers.GetJSONItr(portv1alpha1.GetEncoder(), portv1alpha1.GetDecoder()),
-			ResourceType: "metal_port_vlan_attachment",
-		},
-		{
-			Group:    "project.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "projects",
-		}: {
-			JsonIt:       controllers.GetJSONItr(projectv1alpha1.GetEncoder(), projectv1alpha1.GetDecoder()),
-			ResourceType: "metal_project",
-		},
-		{
-			Group:    "project.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "apikeys",
-		}: {
-			JsonIt:       controllers.GetJSONItr(projectv1alpha1.GetEncoder(), projectv1alpha1.GetDecoder()),
-			ResourceType: "metal_project_api_key",
-		},
-		{
-			Group:    "project.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "sshkeys",
-		}: {
-			JsonIt:       controllers.GetJSONItr(projectv1alpha1.GetEncoder(), projectv1alpha1.GetDecoder()),
-			ResourceType: "metal_project_ssh_key",
-		},
-		{
-			Group:    "reserved.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "ipblocks",
-		}: {
-			JsonIt:       controllers.GetJSONItr(reservedv1alpha1.GetEncoder(), reservedv1alpha1.GetDecoder()),
-			ResourceType: "metal_reserved_ip_block",
-		},
-		{
-			Group:    "spot.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "marketrequests",
-		}: {
-			JsonIt:       controllers.GetJSONItr(spotv1alpha1.GetEncoder(), spotv1alpha1.GetDecoder()),
-			ResourceType: "metal_spot_market_request",
-		},
-		{
-			Group:    "ssh.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "keys",
-		}: {
-			JsonIt:       controllers.GetJSONItr(sshv1alpha1.GetEncoder(), sshv1alpha1.GetDecoder()),
-			ResourceType: "metal_ssh_key",
-		},
-		{
-			Group:    "user.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "apikeys",
-		}: {
-			JsonIt:       controllers.GetJSONItr(userv1alpha1.GetEncoder(), userv1alpha1.GetDecoder()),
-			ResourceType: "metal_user_api_key",
-		},
-		{
-			Group:    "virtual.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "circuits",
-		}: {
-			JsonIt:       controllers.GetJSONItr(virtualv1alpha1.GetEncoder(), virtualv1alpha1.GetDecoder()),
-			ResourceType: "metal_virtual_circuit",
-		},
-		{
-			Group:    "vlan.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "vlans",
-		}: {
-			JsonIt:       controllers.GetJSONItr(vlanv1alpha1.GetEncoder(), vlanv1alpha1.GetDecoder()),
-			ResourceType: "metal_vlan",
-		},
-		{
-			Group:    "volume.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "volumes",
-		}: {
-			JsonIt:       controllers.GetJSONItr(volumev1alpha1.GetEncoder(), volumev1alpha1.GetDecoder()),
-			ResourceType: "metal_volume",
-		},
-		{
-			Group:    "volume.equinixmetal.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "attachments",
-		}: {
-			JsonIt:       controllers.GetJSONItr(volumev1alpha1.GetEncoder(), volumev1alpha1.GetDecoder()),
-			ResourceType: "metal_volume_attachment",
-		},
-	}
-)
+var allJsonIt = map[schema.GroupVersionResource]Data{
+	{
+		Group:    "bgp.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "sessions",
+	}: {
+		JsonIt:       controllers.GetJSONItr(bgpv1alpha1.GetEncoder(), bgpv1alpha1.GetDecoder()),
+		ResourceType: "metal_bgp_session",
+	},
+	{
+		Group:    "connection.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "connections",
+	}: {
+		JsonIt:       controllers.GetJSONItr(connectionv1alpha1.GetEncoder(), connectionv1alpha1.GetDecoder()),
+		ResourceType: "metal_connection",
+	},
+	{
+		Group:    "device.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "devices",
+	}: {
+		JsonIt:       controllers.GetJSONItr(devicev1alpha1.GetEncoder(), devicev1alpha1.GetDecoder()),
+		ResourceType: "metal_device",
+	},
+	{
+		Group:    "device.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "networktypes",
+	}: {
+		JsonIt:       controllers.GetJSONItr(devicev1alpha1.GetEncoder(), devicev1alpha1.GetDecoder()),
+		ResourceType: "metal_device_network_type",
+	},
+	{
+		Group:    "gateway.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "gateways",
+	}: {
+		JsonIt:       controllers.GetJSONItr(gatewayv1alpha1.GetEncoder(), gatewayv1alpha1.GetDecoder()),
+		ResourceType: "metal_gateway",
+	},
+	{
+		Group:    "ip.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "attachments",
+	}: {
+		JsonIt:       controllers.GetJSONItr(ipv1alpha1.GetEncoder(), ipv1alpha1.GetDecoder()),
+		ResourceType: "metal_ip_attachment",
+	},
+	{
+		Group:    "organization.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "organizations",
+	}: {
+		JsonIt:       controllers.GetJSONItr(organizationv1alpha1.GetEncoder(), organizationv1alpha1.GetDecoder()),
+		ResourceType: "metal_organization",
+	},
+	{
+		Group:    "port.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "ports",
+	}: {
+		JsonIt:       controllers.GetJSONItr(portv1alpha1.GetEncoder(), portv1alpha1.GetDecoder()),
+		ResourceType: "metal_port",
+	},
+	{
+		Group:    "port.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "vlanattachments",
+	}: {
+		JsonIt:       controllers.GetJSONItr(portv1alpha1.GetEncoder(), portv1alpha1.GetDecoder()),
+		ResourceType: "metal_port_vlan_attachment",
+	},
+	{
+		Group:    "project.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "projects",
+	}: {
+		JsonIt:       controllers.GetJSONItr(projectv1alpha1.GetEncoder(), projectv1alpha1.GetDecoder()),
+		ResourceType: "metal_project",
+	},
+	{
+		Group:    "project.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "apikeys",
+	}: {
+		JsonIt:       controllers.GetJSONItr(projectv1alpha1.GetEncoder(), projectv1alpha1.GetDecoder()),
+		ResourceType: "metal_project_api_key",
+	},
+	{
+		Group:    "project.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "sshkeys",
+	}: {
+		JsonIt:       controllers.GetJSONItr(projectv1alpha1.GetEncoder(), projectv1alpha1.GetDecoder()),
+		ResourceType: "metal_project_ssh_key",
+	},
+	{
+		Group:    "reserved.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "ipblocks",
+	}: {
+		JsonIt:       controllers.GetJSONItr(reservedv1alpha1.GetEncoder(), reservedv1alpha1.GetDecoder()),
+		ResourceType: "metal_reserved_ip_block",
+	},
+	{
+		Group:    "spot.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "marketrequests",
+	}: {
+		JsonIt:       controllers.GetJSONItr(spotv1alpha1.GetEncoder(), spotv1alpha1.GetDecoder()),
+		ResourceType: "metal_spot_market_request",
+	},
+	{
+		Group:    "ssh.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "keys",
+	}: {
+		JsonIt:       controllers.GetJSONItr(sshv1alpha1.GetEncoder(), sshv1alpha1.GetDecoder()),
+		ResourceType: "metal_ssh_key",
+	},
+	{
+		Group:    "user.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "apikeys",
+	}: {
+		JsonIt:       controllers.GetJSONItr(userv1alpha1.GetEncoder(), userv1alpha1.GetDecoder()),
+		ResourceType: "metal_user_api_key",
+	},
+	{
+		Group:    "virtual.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "circuits",
+	}: {
+		JsonIt:       controllers.GetJSONItr(virtualv1alpha1.GetEncoder(), virtualv1alpha1.GetDecoder()),
+		ResourceType: "metal_virtual_circuit",
+	},
+	{
+		Group:    "vlan.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "vlans",
+	}: {
+		JsonIt:       controllers.GetJSONItr(vlanv1alpha1.GetEncoder(), vlanv1alpha1.GetDecoder()),
+		ResourceType: "metal_vlan",
+	},
+	{
+		Group:    "volume.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "volumes",
+	}: {
+		JsonIt:       controllers.GetJSONItr(volumev1alpha1.GetEncoder(), volumev1alpha1.GetDecoder()),
+		ResourceType: "metal_volume",
+	},
+	{
+		Group:    "volume.equinixmetal.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "attachments",
+	}: {
+		JsonIt:       controllers.GetJSONItr(volumev1alpha1.GetEncoder(), volumev1alpha1.GetDecoder()),
+		ResourceType: "metal_volume_attachment",
+	},
+}
 
 func getJsonItAndResType(gvr schema.GroupVersionResource) Data {
 	return allJsonIt[gvr]
