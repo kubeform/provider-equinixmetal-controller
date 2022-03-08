@@ -3,15 +3,15 @@ module kubeform.dev/provider-equinixmetal-controller
 go 1.16
 
 require (
-	github.com/equinix/terraform-provider-metal v1.1.1-0.20210929123308-2d7fb2c4b0ce
+	github.com/equinix/terraform-provider-metal v1.1.1-0.20220221135159-8191e1aa2653
 	github.com/fatih/structs v1.1.0
 	github.com/go-logr/logr v0.4.0
 	github.com/gobuffalo/flect v0.2.3
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/go-uuid v1.0.1
 	github.com/hashicorp/hcl v1.0.0
-	github.com/hashicorp/terraform-plugin-go v0.3.0
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
+	github.com/hashicorp/terraform-plugin-go v0.4.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.9.0
 	github.com/imdario/mergo v0.3.12
 	github.com/json-iterator/go v1.1.11
 	github.com/pkg/errors v0.9.1
@@ -28,7 +28,7 @@ require (
 	k8s.io/klog/v2 v2.8.0
 	kmodules.xyz/client-go v0.0.0-20211028120227-48eb36f92a30
 	kubeform.dev/apimachinery v0.0.0-20210824104859-ba5604d5a1cc
-	kubeform.dev/provider-equinixmetal-api v0.4.1-0.20220126214435-b4ab0f54b9af
+	kubeform.dev/provider-equinixmetal-api v0.4.1-0.20220308115807-015493830dea
 	kubeform.dev/terraform-backend-sdk v0.0.0-20210922115523-21574335f0db
 	sigs.k8s.io/cli-utils v0.25.0
 	sigs.k8s.io/controller-runtime v0.9.0
