@@ -31,11 +31,28 @@ type MetalGateway struct {
 	UpdatedAt      string                `json:"updated_at,omitempty"`
 }
 
+// MetalGatewayLite struct representation of a Metal Gateway
+type MetalGatewayLite struct {
+	ID string `json:"id,omitempty"`
+	// The current state of the Metal Gateway. 'Ready' indicates the gateway record has been configured, but is currently not active on the network. 'Active' indicates the gateway has been configured on the network. 'Deleting' is a temporary state used to indicate that the gateway is in the process of being un-configured from the network, after which the gateway record will be deleted.
+	State     string     `json:"state,omitempty"`
+	CreatedAt *Timestamp `json:"created_at,omitempty"`
+	UpdatedAt *Timestamp `json:"updated_at,omitempty"`
+	// The gateway address with subnet CIDR value for this Metal Gateway. For example, a Metal Gateway using an IP reservation with block 10.1.2.0/27 would have a gateway address of 10.1.2.1/27.
+	GatewayAddress string `json:"gateway_address,omitempty"`
+	// The VLAN id of the Virtual Network record associated to this Metal Gateway. Example: 1001.
+	VLAN int    `json:"vlan,omitempty"`
+	Href string `json:"href,omitempty"`
+}
+
 type MetalGatewayServiceOp struct {
 	client *Client
 }
 
 func (s *MetalGatewayServiceOp) List(projectID string, opts *ListOptions) (metalGateways []MetalGateway, resp *Response, err error) {
+	if validateErr := ValidateUUID(projectID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	type metalGatewaysRoot struct {
 		MetalGateways []MetalGateway `json:"metal_gateways"`
 		Meta          meta           `json:"meta"`
@@ -69,6 +86,9 @@ type MetalGatewayCreateRequest struct {
 }
 
 func (s *MetalGatewayServiceOp) Get(metalGatewayID string, opts *GetOptions) (*MetalGateway, *Response, error) {
+	if validateErr := ValidateUUID(metalGatewayID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	endpointPath := path.Join(metalGatewayBasePath, metalGatewayID)
 	apiPathQuery := opts.WithQuery(endpointPath)
 	metalGateway := new(MetalGateway)
@@ -82,6 +102,9 @@ func (s *MetalGatewayServiceOp) Get(metalGatewayID string, opts *GetOptions) (*M
 }
 
 func (s *MetalGatewayServiceOp) Create(projectID string, input *MetalGatewayCreateRequest) (*MetalGateway, *Response, error) {
+	if validateErr := ValidateUUID(projectID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	apiPath := path.Join(projectBasePath, projectID, metalGatewayBasePath)
 	output := new(MetalGateway)
 
@@ -94,6 +117,9 @@ func (s *MetalGatewayServiceOp) Create(projectID string, input *MetalGatewayCrea
 }
 
 func (s *MetalGatewayServiceOp) Delete(metalGatewayID string) (*Response, error) {
+	if validateErr := ValidateUUID(metalGatewayID); validateErr != nil {
+		return nil, validateErr
+	}
 	apiPath := path.Join(metalGatewayBasePath, metalGatewayID)
 
 	resp, err := s.client.DoRequest("DELETE", apiPath, nil, nil)
