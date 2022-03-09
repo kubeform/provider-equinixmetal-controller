@@ -36,8 +36,14 @@ type ProjectIPService interface {
 	List(projectID string, opts *ListOptions) ([]IPAddressReservation, *Response, error)
 	Request(projectID string, ipReservationReq *IPReservationRequest) (*IPAddressReservation, *Response, error)
 	Remove(ipReservationID string) (*Response, error)
+	Update(assignmentID string, updateRequest *IPAddressUpdateRequest, opt *GetOptions) (*IPAddressReservation, *Response, error)
 	AvailableAddresses(ipReservationID string, r *AvailableRequest) ([]string, *Response, error)
 }
+
+var (
+	_ DeviceIPService  = (*DeviceIPServiceOp)(nil)
+	_ ProjectIPService = (*ProjectIPServiceOp)(nil)
+)
 
 type IpAddressCommon struct { //nolint:golint
 	ID            string       `json:"id"`
@@ -69,15 +75,32 @@ type ParentBlock struct {
 	Href    *string `json:"href,omitempty"`
 }
 
+type IPReservationState string
+
+const (
+	// IPReservationStatePending fixed string representation of pending
+	IPReservationStatePending IPReservationState = "pending"
+
+	// IPReservationStateCreated fixed string representation of created
+	IPReservationStateCreated IPReservationState = "created"
+
+	// IPReservationStateDenied fixed string representation of denied
+	IPReservationStateDenied IPReservationState = "denied"
+)
+
 // IPAddressReservation is created when user sends IP reservation request for a project (considering it's within quota).
 type IPAddressReservation struct {
 	IpAddressCommon
-	Assignments []*IPAddressAssignment `json:"assignments"`
-	Facility    *Facility              `json:"facility,omitempty"`
-	Available   string                 `json:"available"`
-	Addon       bool                   `json:"addon"`
-	Bill        bool                   `json:"bill"`
-	Description *string                `json:"details"`
+	Assignments  []*IPAddressAssignment `json:"assignments"`
+	Facility     *Facility              `json:"facility,omitempty"`
+	Available    string                 `json:"available"`
+	Addon        bool                   `json:"addon"`
+	Bill         bool                   `json:"bill"`
+	State        IPReservationState     `json:"state"`
+	Description  *string                `json:"details"`
+	Enabled      bool                   `json:"enabled"`
+	MetalGateway *MetalGatewayLite      `json:"metal_gateway,omitempty"`
+	RequestedBy  *UserLite              `json:"requested_by,omitempty"`
 }
 
 // AvailableResponse is a type for listing of available addresses from a reserved block.
@@ -94,6 +117,13 @@ type AvailableRequest struct {
 type IPAddressAssignment struct {
 	IpAddressCommon
 	AssignedTo Href `json:"assigned_to"`
+}
+
+// IPAddressUpdateRequest represents the body of an IPAddress patch
+type IPAddressUpdateRequest struct {
+	Tags        *[]string   `json:"tags,omitempty"`
+	Description *string     `json:"details,omitempty"`
+	CustomData  interface{} `json:"customdata,omitempty"`
 }
 
 // IPReservationRequest represents the body of a reservation request.
@@ -116,6 +146,9 @@ type AddressStruct struct {
 }
 
 func deleteFromIP(client *Client, resourceID string) (*Response, error) {
+	if validateErr := ValidateUUID(resourceID); validateErr != nil {
+		return nil, validateErr
+	}
 	apiPath := path.Join(ipBasePath, resourceID)
 
 	return client.DoRequest("DELETE", apiPath, nil, nil)
@@ -138,12 +171,18 @@ type DeviceIPServiceOp struct {
 // This will remove the relationship between an IP and the device and will make the IP
 // address available to be assigned to another device.
 func (i *DeviceIPServiceOp) Unassign(assignmentID string) (*Response, error) {
+	if validateErr := ValidateUUID(assignmentID); validateErr != nil {
+		return nil, validateErr
+	}
 	return deleteFromIP(i.client, assignmentID)
 }
 
 // Assign assigns an IP address to a device.
 // The IP address must be in one of the IP ranges assigned to the device’s project.
 func (i *DeviceIPServiceOp) Assign(deviceID string, assignRequest *AddressStruct) (*IPAddressAssignment, *Response, error) {
+	if validateErr := ValidateUUID(deviceID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	apiPath := path.Join(deviceBasePath, deviceID, ipBasePath)
 	ipa := new(IPAddressAssignment)
 
@@ -157,6 +196,9 @@ func (i *DeviceIPServiceOp) Assign(deviceID string, assignRequest *AddressStruct
 
 // Get returns assignment by ID.
 func (i *DeviceIPServiceOp) Get(assignmentID string, opts *GetOptions) (*IPAddressAssignment, *Response, error) {
+	if validateErr := ValidateUUID(assignmentID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	endpointPath := path.Join(ipBasePath, assignmentID)
 	apiPathQuery := opts.WithQuery(endpointPath)
 	ipa := new(IPAddressAssignment)
@@ -171,6 +213,9 @@ func (i *DeviceIPServiceOp) Get(assignmentID string, opts *GetOptions) (*IPAddre
 
 // List list all of the IP address assignments on a device
 func (i *DeviceIPServiceOp) List(deviceID string, opts *ListOptions) ([]IPAddressAssignment, *Response, error) {
+	if validateErr := ValidateUUID(deviceID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	endpointPath := path.Join(deviceBasePath, deviceID, ipBasePath)
 	apiPathQuery := opts.WithQuery(endpointPath)
 
@@ -196,6 +241,9 @@ type ProjectIPServiceOp struct {
 
 // Get returns reservation by ID.
 func (i *ProjectIPServiceOp) Get(reservationID string, opts *GetOptions) (*IPAddressReservation, *Response, error) {
+	if validateErr := ValidateUUID(reservationID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	endpointPath := path.Join(ipBasePath, reservationID)
 	apiPathQuery := opts.WithQuery(endpointPath)
 	ipr := new(IPAddressReservation)
@@ -210,6 +258,9 @@ func (i *ProjectIPServiceOp) Get(reservationID string, opts *GetOptions) (*IPAdd
 
 // List provides a list of IP resevations for a single project.
 func (i *ProjectIPServiceOp) List(projectID string, opts *ListOptions) ([]IPAddressReservation, *Response, error) {
+	if validateErr := ValidateUUID(projectID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	endpointPath := path.Join(projectBasePath, projectID, ipBasePath)
 	apiPathQuery := opts.WithQuery(endpointPath)
 	reservations := new(struct {
@@ -225,6 +276,9 @@ func (i *ProjectIPServiceOp) List(projectID string, opts *ListOptions) ([]IPAddr
 
 // Request requests more IP space for a project in order to have additional IP addresses to assign to devices.
 func (i *ProjectIPServiceOp) Request(projectID string, ipReservationReq *IPReservationRequest) (*IPAddressReservation, *Response, error) {
+	if validateErr := ValidateUUID(projectID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	apiPath := path.Join(projectBasePath, projectID, ipBasePath)
 	ipr := new(IPAddressReservation)
 
@@ -235,13 +289,40 @@ func (i *ProjectIPServiceOp) Request(projectID string, ipReservationReq *IPReser
 	return ipr, resp, err
 }
 
+// Update updates an existing IP reservation.
+func (i *ProjectIPServiceOp) Update(reservationID string, updateRequest *IPAddressUpdateRequest, opts *GetOptions) (*IPAddressReservation, *Response, error) {
+	if validateErr := ValidateUUID(reservationID); validateErr != nil {
+		return nil, nil, validateErr
+	}
+	if opts == nil {
+		opts = &GetOptions{}
+	}
+	endpointPath := path.Join(ipBasePath, reservationID)
+	apiPathQuery := opts.WithQuery(endpointPath)
+	ipr := new(IPAddressReservation)
+
+	resp, err := i.client.DoRequest("PATCH", apiPathQuery, updateRequest, ipr)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ipr, resp, err
+}
+
 // Remove removes an IP reservation from the project.
 func (i *ProjectIPServiceOp) Remove(ipReservationID string) (*Response, error) {
+	if validateErr := ValidateUUID(ipReservationID); validateErr != nil {
+		return nil, validateErr
+	}
 	return deleteFromIP(i.client, ipReservationID)
 }
 
 // AvailableAddresses lists addresses available from a reserved block
 func (i *ProjectIPServiceOp) AvailableAddresses(ipReservationID string, r *AvailableRequest) ([]string, *Response, error) {
+	if validateErr := ValidateUUID(ipReservationID); validateErr != nil {
+		return nil, nil, validateErr
+	}
 	apiPathQuery := fmt.Sprintf("%s/%s/available?cidr=%d", ipBasePath, ipReservationID, r.CIDR)
 	ar := new(AvailableResponse)
 

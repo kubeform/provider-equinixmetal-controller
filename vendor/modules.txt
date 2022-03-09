@@ -149,7 +149,7 @@ github.com/dimchansky/utfbom
 # github.com/emicklei/go-restful v2.9.5+incompatible
 github.com/emicklei/go-restful
 github.com/emicklei/go-restful/log
-# github.com/equinix/terraform-provider-metal v1.1.1-0.20210929123308-2d7fb2c4b0ce
+# github.com/equinix/terraform-provider-metal v1.1.1-0.20220221135159-8191e1aa2653
 ## explicit
 github.com/equinix/terraform-provider-metal/metal
 github.com/equinix/terraform-provider-metal/version
@@ -308,26 +308,26 @@ github.com/hashicorp/hcl/v2/json
 github.com/hashicorp/logutils
 # github.com/hashicorp/serf v0.9.5
 github.com/hashicorp/serf/coordinate
-# github.com/hashicorp/terraform-exec v0.14.0
+# github.com/hashicorp/terraform-exec v0.15.0
 github.com/hashicorp/terraform-exec/internal/version
 github.com/hashicorp/terraform-exec/tfexec
 github.com/hashicorp/terraform-exec/tfinstall
-# github.com/hashicorp/terraform-json v0.12.0
+# github.com/hashicorp/terraform-json v0.13.0
 github.com/hashicorp/terraform-json
-# github.com/hashicorp/terraform-plugin-go v0.3.0
+# github.com/hashicorp/terraform-plugin-go v0.4.0
 ## explicit
 github.com/hashicorp/terraform-plugin-go/tfprotov5
 github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/fromproto
 github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/tfplugin5
 github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/toproto
-github.com/hashicorp/terraform-plugin-go/tfprotov5/server
+github.com/hashicorp/terraform-plugin-go/tfprotov5/tf5server
 github.com/hashicorp/terraform-plugin-go/tfprotov6
 github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/fromproto
 github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/tfplugin6
 github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/toproto
-github.com/hashicorp/terraform-plugin-go/tfprotov6/server
+github.com/hashicorp/terraform-plugin-go/tfprotov6/tf6server
 github.com/hashicorp/terraform-plugin-go/tftypes
-# github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.9.0
 ## explicit
 github.com/hashicorp/terraform-plugin-sdk/v2/diag
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff
@@ -435,7 +435,7 @@ github.com/nats-io/nkeys
 github.com/nats-io/nuid
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/packethost/packngo v0.19.1
+# github.com/packethost/packngo v0.22.0
 github.com/packethost/packngo
 # github.com/pkg/errors v0.9.1
 ## explicit
@@ -1297,7 +1297,7 @@ kmodules.xyz/resource-metrics/api
 ## explicit
 kubeform.dev/apimachinery/api/v1alpha1
 kubeform.dev/apimachinery/pkg/util
-# kubeform.dev/provider-equinixmetal-api v0.4.1-0.20220126214435-b4ab0f54b9af
+# kubeform.dev/provider-equinixmetal-api v0.4.1-0.20220308121011-90214aac2f6d
 ## explicit
 kubeform.dev/provider-equinixmetal-api/api/provider
 kubeform.dev/provider-equinixmetal-api/apis/bgp
